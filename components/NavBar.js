@@ -21,7 +21,7 @@ export default function NavBar() {
               D
             </span>
             <span className="font-display text-lg tracking-wide text-parchment">
-              Wayfarer's Toolkit
+              DnD's Toolkit
             </span>
           </Link>
           <nav className="flex gap-1 overflow-x-auto">

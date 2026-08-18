@@ -15,7 +15,7 @@ export default function ShopsPage() {
     setTown((prev) => ({
       ...prev,
       shops: prev.shops.map((s) =>
-        s.id === shop.id ? rerollShop(shop.type, prev.size) : s
+        s.id === shop.id ? rerollShop(shop, prev.size) : s
       ),
     }));
   }
@@ -74,13 +74,16 @@ export default function ShopsPage() {
                 right={
                   <button
                     onClick={() => handleReroll(shop)}
-                    title="Reroll this location"
-                    className="text-muted hover:text-crimsonBright text-sm font-display"
+                    title={shop.hook ? "Reroll this location" : "Restock this shop"}
+                    className="text-muted hover:text-crimsonBright text-sm font-display whitespace-nowrap"
                   >
-                    ↻ Reroll
+                    ↻ {shop.hook ? "Reroll" : "Restock"}
                   </button>
                 }
               >
+                {shop.tagline && (
+                  <p className="text-sm text-muted italic mb-3">{shop.tagline}</p>
+                )}
                 {shop.hook ? (
                   <p className="text-sm text-parchment/90 leading-relaxed">
                     {shop.hook}

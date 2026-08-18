@@ -6,7 +6,7 @@ export default function Layout({ children }) {
       <NavBar />
       <main className="max-w-6xl mx-auto px-4 py-8">{children}</main>
       <footer className="max-w-6xl mx-auto px-4 py-10 text-muted text-sm border-t border-line mt-16">
-        Wayfarer's Toolkit — built for the table, not against it.
+        DnD's Toolkit — built for the table, not against it.
       </footer>
     </div>
   );

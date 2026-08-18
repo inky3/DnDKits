@@ -5,6 +5,7 @@ const LINKS = [
   { href: "/", label: "Home" },
   { href: "/shops", label: "Shops" },
   { href: "/monsters", label: "Monsters" },
+  { href: "/npcs", label: "NPCs" },
   { href: "/character-sheet", label: "Character Sheet" },
   { href: "/homebrew", label: "Homebrew" },
 ];

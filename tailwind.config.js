@@ -26,20 +26,6 @@ module.exports = {
       boxShadow: {
         card: "0 2px 0 0 rgba(0,0,0,0.4), 0 8px 20px -8px rgba(0,0,0,0.6)",
       },
-      keyframes: {
-        slideUp: {
-          "0%": { transform: "translateY(100%)" },
-          "100%": { transform: "translateY(0)" },
-        },
-        fadeIn: {
-          "0%": { opacity: 0 },
-          "100%": { opacity: 1 },
-        },
-      },
-      animation: {
-        slideUp: "slideUp 220ms ease-out",
-        fadeIn: "fadeIn 220ms ease-out",
-      },
     },
   },
   plugins: [],

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Panel from "@/components/Panel";
 import { listItems, addItem, removeItem } from "@/lib/storage";
+import { useT } from "@/lib/i18n/useT";
 
 const BLANK_CHARACTER = {
   name: "",
@@ -23,6 +24,7 @@ function mod(score) {
 }
 
 export default function CharacterSheetPage() {
+  const { t } = useT();
   const [characters, setCharacters] = useState([]);
   const [draft, setDraft] = useState(BLANK_CHARACTER);
   const [loading, setLoading] = useState(true);
@@ -54,46 +56,43 @@ export default function CharacterSheetPage() {
     <div>
       <div className="mb-8">
         <div className="section-rule mb-4" />
-        <h1 className="font-display text-3xl mb-2">Character Sheet</h1>
-        <p className="text-muted max-w-2xl">
-          Fill in your character below and save it — saved sheets sync to
-          Firebase once configured, or stay in this browser otherwise.
-        </p>
+        <h1 className="font-display text-3xl mb-2">{t("characterSheet.heading")}</h1>
+        <p className="text-muted max-w-2xl">{t("characterSheet.subheading")}</p>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <Panel title="Identity" eyebrow="Basics">
+          <Panel title={t("characterSheet.identity")} eyebrow={t("characterSheet.basics")}>
             <div className="grid sm:grid-cols-2 gap-4">
-              <Field label="Name">
+              <Field label={t("characterSheet.name")}>
                 <input
                   className="input"
                   value={draft.name}
                   onChange={(e) => setDraft({ ...draft, name: e.target.value })}
                 />
               </Field>
-              <Field label="Class">
+              <Field label={t("characterSheet.class")}>
                 <input
                   className="input"
                   value={draft.charClass}
                   onChange={(e) => setDraft({ ...draft, charClass: e.target.value })}
                 />
               </Field>
-              <Field label="Race">
+              <Field label={t("characterSheet.race")}>
                 <input
                   className="input"
                   value={draft.race}
                   onChange={(e) => setDraft({ ...draft, race: e.target.value })}
                 />
               </Field>
-              <Field label="Background">
+              <Field label={t("characterSheet.background")}>
                 <input
                   className="input"
                   value={draft.background}
                   onChange={(e) => setDraft({ ...draft, background: e.target.value })}
                 />
               </Field>
-              <Field label="Level">
+              <Field label={t("characterSheet.level")}>
                 <input
                   type="number"
                   className="input"
@@ -104,9 +103,9 @@ export default function CharacterSheetPage() {
             </div>
           </Panel>
 
-          <Panel title="Combat" eyebrow="Vitals">
+          <Panel title={t("characterSheet.combat")} eyebrow={t("characterSheet.vitals")}>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <Field label="HP">
+              <Field label={t("characterSheet.hp")}>
                 <input
                   type="number"
                   className="input"
@@ -114,7 +113,7 @@ export default function CharacterSheetPage() {
                   onChange={(e) => setDraft({ ...draft, hp: Number(e.target.value) })}
                 />
               </Field>
-              <Field label="Max HP">
+              <Field label={t("characterSheet.maxHp")}>
                 <input
                   type="number"
                   className="input"
@@ -122,7 +121,7 @@ export default function CharacterSheetPage() {
                   onChange={(e) => setDraft({ ...draft, maxHp: Number(e.target.value) })}
                 />
               </Field>
-              <Field label="AC">
+              <Field label={t("characterSheet.ac")}>
                 <input
                   type="number"
                   className="input"
@@ -130,7 +129,7 @@ export default function CharacterSheetPage() {
                   onChange={(e) => setDraft({ ...draft, ac: Number(e.target.value) })}
                 />
               </Field>
-              <Field label="Speed">
+              <Field label={t("characterSheet.speed")}>
                 <input
                   type="number"
                   className="input"
@@ -141,7 +140,7 @@ export default function CharacterSheetPage() {
             </div>
           </Panel>
 
-          <Panel title="Ability Scores" eyebrow="Stats">
+          <Panel title={t("characterSheet.abilityScores")} eyebrow={t("characterSheet.stats")}>
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
               {Object.entries(draft.stats).map(([key, value]) => (
                 <div key={key} className="bg-panel2 border border-line rounded-sm p-3 text-center">
@@ -158,8 +157,8 @@ export default function CharacterSheetPage() {
             </div>
           </Panel>
 
-          <Panel title="Gear & Notes">
-            <Field label="Gear">
+          <Panel title={t("characterSheet.gearAndNotes")}>
+            <Field label={t("characterSheet.gear")}>
               <textarea
                 className="input min-h-[80px]"
                 value={draft.gear}
@@ -167,7 +166,7 @@ export default function CharacterSheetPage() {
               />
             </Field>
             <div className="h-4" />
-            <Field label="Notes">
+            <Field label={t("characterSheet.notes")}>
               <textarea
                 className="input min-h-[80px]"
                 value={draft.notes}
@@ -180,14 +179,17 @@ export default function CharacterSheetPage() {
             onClick={handleSave}
             className="px-5 py-2.5 bg-crimson hover:bg-crimsonBright transition-colors rounded-sm font-display tracking-wide text-white"
           >
-            Save Character
+            {t("characterSheet.saveCharacter")}
           </button>
         </div>
 
         <div>
-          <Panel title="Saved Characters" eyebrow={loading ? "Loading…" : `${characters.length} total`}>
+          <Panel
+            title={t("characterSheet.savedCharacters")}
+            eyebrow={loading ? t("common.loading") : t("characterSheet.total", { count: characters.length })}
+          >
             {characters.length === 0 && !loading && (
-              <p className="text-muted text-sm">No characters saved yet.</p>
+              <p className="text-muted text-sm">{t("characterSheet.none")}</p>
             )}
             <div className="space-y-3">
               {characters.map((c) => (
@@ -196,16 +198,20 @@ export default function CharacterSheetPage() {
                   className="border border-line rounded-sm p-3 flex items-start justify-between gap-2"
                 >
                   <div>
-                    <div className="font-display text-sm">{c.name || "Unnamed"}</div>
+                    <div className="font-display text-sm">{c.name || t("characterSheet.unnamed")}</div>
                     <div className="text-xs text-muted">
-                      Lvl {c.level} {c.race} {c.charClass}
+                      {t("characterSheet.levelLine", {
+                        level: c.level,
+                        race: c.race,
+                        class: c.charClass,
+                      })}
                     </div>
                   </div>
                   <button
                     onClick={() => handleDelete(c.id)}
                     className="text-muted hover:text-crimsonBright text-xs"
                   >
-                    Delete
+                    {t("common.delete")}
                   </button>
                 </div>
               ))}

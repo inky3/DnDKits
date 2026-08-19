@@ -2,10 +2,14 @@ import { useState } from "react";
 import Panel from "@/components/Panel";
 import { TOWN_SIZES } from "@/lib/data/shopData";
 import { generateTown, rerollShop } from "@/lib/shopGenerator";
+import { useT } from "@/lib/i18n/useT";
 
 export default function ShopsPage() {
+  const { t } = useT();
   const [sizeKey, setSizeKey] = useState("town");
   const [town, setTown] = useState(null);
+
+  const sizeLabel = t(`shops.townSizes.${sizeKey}.label`);
 
   function handleGenerate() {
     setTown(generateTown(sizeKey));
@@ -24,17 +28,13 @@ export default function ShopsPage() {
     <div>
       <div className="mb-8">
         <div className="section-rule mb-4" />
-        <h1 className="font-display text-3xl mb-2">Shop Generator</h1>
-        <p className="text-muted max-w-2xl">
-          Pick a settlement size and get a ready-to-use set of shops with
-          stock, prices, and a few unmarked locations to drop your players
-          into.
-        </p>
+        <h1 className="font-display text-3xl mb-2">{t("shops.heading")}</h1>
+        <p className="text-muted max-w-2xl">{t("shops.subheading")}</p>
       </div>
 
-      <Panel title="Settlement" eyebrow="Step 1" className="mb-8">
+      <Panel title={t("shops.settlement")} eyebrow={t("shops.step1")} className="mb-8">
         <div className="flex flex-wrap gap-3 mb-5">
-          {Object.entries(TOWN_SIZES).map(([key, def]) => (
+          {Object.keys(TOWN_SIZES).map((key) => (
             <button
               key={key}
               onClick={() => setSizeKey(key)}
@@ -44,40 +44,43 @@ export default function ShopsPage() {
                   : "bg-panel2 border-line text-muted hover:text-parchment hover:border-crimson"
               }`}
             >
-              {def.label}
+              {t(`shops.townSizes.${key}.label`)}
             </button>
           ))}
         </div>
         <p className="text-sm text-muted mb-5">
-          {TOWN_SIZES[sizeKey].description}
+          {t(`shops.townSizes.${sizeKey}.description`)}
         </p>
         <button
           onClick={handleGenerate}
           className="px-5 py-2.5 bg-crimson hover:bg-crimsonBright transition-colors rounded-sm font-display tracking-wide text-white"
         >
-          Generate {TOWN_SIZES[sizeKey].label}
+          {t("shops.generate", { size: sizeLabel })}
         </button>
       </Panel>
 
       {town && (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display text-2xl">{town.sizeLabel} — Shops</h2>
-            <span className="text-muted text-sm">{town.shops.length} locations</span>
+            <h2 className="font-display text-2xl">
+              {t(`shops.townSizes.${town.size}.label`)} — {t("nav.shops")}
+            </h2>
+            <span className="text-muted text-sm">
+              {t("shops.shopsCount", { count: town.shops.length })}
+            </span>
           </div>
           <div className="grid md:grid-cols-2 gap-5">
             {town.shops.map((shop) => (
               <Panel
                 key={shop.id}
-                eyebrow={shop.typeLabel}
+                eyebrow={shop.type === "random" ? shop.typeLabel : t(`shops.shopTypes.${shop.type}`)}
                 title={shop.name}
                 right={
                   <button
                     onClick={() => handleReroll(shop)}
-                    title={shop.hook ? "Reroll this location" : "Restock this shop"}
                     className="text-muted hover:text-crimsonBright text-sm font-display whitespace-nowrap"
                   >
-                    ↻ {shop.hook ? "Reroll" : "Restock"}
+                    ↻ {shop.hook ? t("shops.reroll") : t("shops.restock")}
                   </button>
                 }
               >

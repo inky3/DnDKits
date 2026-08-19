@@ -4,6 +4,7 @@ import Link from "next/link";
 import Panel from "@/components/Panel";
 import { HOMEBREW_CATEGORIES } from "@/lib/data/homebrewCategories";
 import { listItems, addItem, removeItem } from "@/lib/storage";
+import { useT } from "@/lib/i18n/useT";
 
 function blankFields(fields) {
   const obj = {};
@@ -15,8 +16,12 @@ function blankFields(fields) {
 
 export default function HomebrewCategoryPage() {
   const router = useRouter();
+  const { t } = useT();
   const { category, create } = router.query;
   const cat = category ? HOMEBREW_CATEGORIES[category] : null;
+  const label = category ? t(`homebrew.categories.${category}.label`) : "";
+  const singular = category ? t(`homebrew.categories.${category}.singular`) : "";
+  const description = category ? t(`homebrew.categories.${category}.description`) : "";
 
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,9 +48,9 @@ export default function HomebrewCategoryPage() {
   if (router.isReady && !cat) {
     return (
       <div>
-        <p className="text-muted mb-4">Unknown homebrew category.</p>
+        <p className="text-muted mb-4">{t("homebrew.unknownCategory")}</p>
         <Link href="/homebrew" className="text-crimsonBright font-display text-sm">
-          ← Back to Homebrew
+          {t("homebrew.backToHomebrew")}
         </Link>
       </div>
     );
@@ -71,28 +76,32 @@ export default function HomebrewCategoryPage() {
     <div>
       <div className="mb-6">
         <Link href="/homebrew" className="text-muted hover:text-crimsonBright text-sm font-display">
-          ← All Homebrew
+          {t("homebrew.allHomebrew")}
         </Link>
       </div>
 
       <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
         <div>
           <div className="section-rule mb-4" />
-          <h1 className="font-display text-3xl mb-2">Homebrew {cat.label}</h1>
-          <p className="text-muted max-w-2xl">{cat.description}</p>
+          <h1 className="font-display text-3xl mb-2">
+            {t("homebrew.heading")} · {label}
+          </h1>
+          <p className="text-muted max-w-2xl">{description}</p>
         </div>
         <button
           onClick={() => setShowForm((s) => !s)}
           className="px-5 py-2.5 bg-crimson hover:bg-crimsonBright transition-colors rounded-sm font-display tracking-wide text-white whitespace-nowrap"
         >
-          {showForm ? "Cancel" : `Create ${cat.singular}`}
+          {showForm ? t("common.cancel") : t("homebrew.create", { singular })}
         </button>
       </div>
 
       {showForm && (
-        <Panel title={`New ${cat.singular}`} eyebrow="Create" className="mb-8">
+        <Panel title={t("homebrew.newEntry", { singular })} eyebrow={t("homebrew.createEyebrow")} className="mb-8">
           <label className="block mb-4">
-            <span className="block text-xs text-muted uppercase tracking-wide mb-1">Name</span>
+            <span className="block text-xs text-muted uppercase tracking-wide mb-1">
+              {t("homebrew.name")}
+            </span>
             <input className="input" value={name} onChange={(e) => setName(e.target.value)} />
           </label>
 
@@ -140,16 +149,14 @@ export default function HomebrewCategoryPage() {
             onClick={handleSave}
             className="px-5 py-2.5 bg-crimson hover:bg-crimsonBright transition-colors rounded-sm font-display tracking-wide text-white"
           >
-            Save {cat.singular}
+            {t("homebrew.save", { singular })}
           </button>
         </Panel>
       )}
 
-      {loading && <p className="text-muted text-sm">Loading…</p>}
+      {loading && <p className="text-muted text-sm">{t("common.loading")}</p>}
       {!loading && entries.length === 0 && (
-        <p className="text-muted text-sm">
-          No homebrew {cat.label.toLowerCase()} yet — create one to get started.
-        </p>
+        <p className="text-muted text-sm">{t("homebrew.none", { label: label.toLowerCase() })}</p>
       )}
 
       <div className="grid sm:grid-cols-2 gap-5">
@@ -158,14 +165,14 @@ export default function HomebrewCategoryPage() {
           return (
             <Panel
               key={entry.id}
-              eyebrow={cat.singular}
+              eyebrow={singular}
               title={entry.name}
               right={
                 <button
                   onClick={() => handleDelete(entry.id)}
                   className="text-muted hover:text-crimsonBright text-xs"
                 >
-                  Delete
+                  {t("common.delete")}
                 </button>
               }
             >
@@ -187,7 +194,7 @@ export default function HomebrewCategoryPage() {
                   onClick={() => setExpanded(isOpen ? null : entry.id)}
                   className="mt-3 text-xs font-display text-crimsonBright"
                 >
-                  {isOpen ? "Show less" : "Show more"}
+                  {isOpen ? t("homebrew.showLess") : t("homebrew.showMore")}
                 </button>
               )}
             </Panel>

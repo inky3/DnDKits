@@ -1,31 +1,33 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-
-const LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/shops", label: "Shops" },
-  { href: "/monsters", label: "Monsters" },
-  { href: "/npcs", label: "NPCs" },
-  { href: "/character-sheet", label: "Character Sheet" },
-  { href: "/homebrew", label: "Homebrew" },
-];
+import { useT } from "@/lib/i18n/useT";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function NavBar() {
   const router = useRouter();
+  const { t } = useT();
+
+  const LINKS = [
+    { href: "/", label: t("nav.home") },
+    { href: "/shops", label: t("nav.shops") },
+    { href: "/monsters", label: t("nav.monsters") },
+    { href: "/character-sheet", label: t("nav.characterSheet") },
+    { href: "/homebrew", label: t("nav.homebrew") },
+  ];
 
   return (
     <header className="sticky top-0 z-40 bg-panel border-b border-line">
       <div className="max-w-6xl mx-auto px-4">
-        <div className="flex items-center h-16 gap-8">
+        <div className="flex items-center h-16 gap-4">
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <span className="w-7 h-7 rounded-sm bg-crimson flex items-center justify-center font-display font-bold text-parchment">
               D
             </span>
-            <span className="font-display text-lg tracking-wide text-parchment">
-              DnD's Toolkit
+            <span className="font-display text-lg tracking-wide text-parchment whitespace-nowrap">
+              {t("nav.brand")}
             </span>
           </Link>
-          <nav className="flex gap-1 overflow-x-auto">
+          <nav className="flex gap-1 overflow-x-auto flex-1">
             {LINKS.map((link) => {
               const active =
                 link.href === "/"
@@ -46,6 +48,7 @@ export default function NavBar() {
               );
             })}
           </nav>
+          <LanguageSwitcher />
         </div>
       </div>
     </header>

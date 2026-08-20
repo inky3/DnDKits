@@ -107,6 +107,20 @@ export default function EncounterPage() {
     );
   }
 
+  function setHp(id, value) {
+    setCombatants((prev) =>
+      prev.map((c) =>
+        c.id === id ? { ...c, hp: Math.max(0, Math.min(c.maxHp, value)) } : c
+      )
+    );
+  }
+
+  function setInitiative(id, value) {
+    setCombatants((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, initiative: value } : c))
+    );
+  }
+
   function removeCombatant(id) {
     setCombatants((prev) => prev.filter((c) => c.id !== id));
   }
@@ -295,13 +309,25 @@ export default function EncounterPage() {
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <button
-                        onClick={() => rollOne(c.id)}
-                        className="w-10 h-10 shrink-0 flex items-center justify-center rounded-sm bg-panel2 border border-line font-display text-sm hover:border-crimson"
-                        title={t("encounter.rollInitiative")}
-                      >
-                        {c.initiative ?? "–"}
-                      </button>
+                      <div className="flex flex-col items-center shrink-0 gap-1">
+                        <input
+                          type="number"
+                          value={c.initiative ?? ""}
+                          onChange={(e) =>
+                            setInitiative(c.id, e.target.value === "" ? null : Number(e.target.value))
+                          }
+                          placeholder="–"
+                          title={t("encounter.setInitiative")}
+                          className="w-12 h-9 text-center rounded-sm bg-panel2 border border-line font-display text-sm focus:outline-none focus:border-crimson"
+                        />
+                        <button
+                          onClick={() => rollOne(c.id)}
+                          title={t("encounter.rollInitiative")}
+                          className="text-xs text-muted hover:text-crimsonBright leading-none"
+                        >
+                          🎲
+                        </button>
+                      </div>
                       <div className="min-w-0">
                         <div className="font-display text-sm truncate">
                           {c.name}{" "}
@@ -309,8 +335,15 @@ export default function EncounterPage() {
                             {c.isPlayer ? t("encounter.player") : t("encounter.monster")}
                           </span>
                         </div>
-                        <div className="text-xs text-muted">
-                          AC {c.ac} · {t("encounter.hp")} {c.hp}/{c.maxHp}
+                        <div className="text-xs text-muted flex items-center gap-1">
+                          AC {c.ac} · {t("encounter.hp")}{" "}
+                          <input
+                            type="number"
+                            value={c.hp}
+                            onChange={(e) => setHp(c.id, Number(e.target.value) || 0)}
+                            className="w-12 bg-panel2 border border-line rounded-sm px-1 py-0.5 text-xs text-center focus:outline-none focus:border-crimson"
+                          />
+                          /{c.maxHp}
                         </div>
                       </div>
                     </div>

@@ -30,6 +30,16 @@ export default function MonstersPage() {
     setSavedMsg(false);
   }
 
+  function updateGenerated(patch) {
+    setGenerated((g) => ({ ...g, ...patch }));
+    setSavedMsg(false);
+  }
+
+  function updateGeneratedStat(key, value) {
+    setGenerated((g) => ({ ...g, stats: { ...g.stats, [key]: value } }));
+    setSavedMsg(false);
+  }
+
   async function handleSaveToHomebrew() {
     if (!generated) return;
     await addItem("homebrew", {
@@ -54,8 +64,6 @@ export default function MonstersPage() {
     });
     setSavedMsg(true);
   }
-
-  const active = mode === "browse" ? selected : generated;
 
   return (
     <div>
@@ -131,7 +139,7 @@ export default function MonstersPage() {
               onClick={handleGenerate}
               className="px-5 py-2.5 bg-crimson hover:bg-crimsonBright transition-colors rounded-sm font-display tracking-wide text-white"
             >
-              {t("monsters.generateButton")}
+              {generated ? t("monsters.regenerate") : t("monsters.generateButton")}
             </button>
             {generated && (
               <button
@@ -148,8 +156,8 @@ export default function MonstersPage() {
         </Panel>
       )}
 
-      <div className={mode === "browse" ? "grid md:grid-cols-3 gap-5" : ""}>
-        {mode === "browse" && (
+      {mode === "browse" ? (
+        <div className="grid md:grid-cols-3 gap-5">
           <div className="md:col-span-1 flex flex-col gap-2">
             {filtered.length === 0 && (
               <p className="text-muted text-sm">{t("monsters.noMatches")}</p>
@@ -171,62 +179,182 @@ export default function MonstersPage() {
               </button>
             ))}
           </div>
-        )}
 
-        <div className={mode === "browse" ? "md:col-span-2" : ""}>
-          {active ? (
-            <Panel eyebrow={`CR ${active.cr} · ${active.type}`} title={active.name}>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4 text-sm">
-                <Stat label={t("monsters.ac")} value={active.ac} />
-                <Stat label={t("monsters.hp")} value={active.hp} />
-                <Stat label={t("monsters.speed")} value={active.speed} />
-                <Stat label={t("monsters.size")} value={active.size} />
-                <Stat label={t("monsters.environment")} value={active.environment.join(", ")} />
-              </div>
+          <div className="md:col-span-2">
+            {selected ? (
+              <Panel eyebrow={`CR ${selected.cr} · ${selected.type}`} title={selected.name}>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4 text-sm">
+                  <Stat label={t("monsters.ac")} value={selected.ac} />
+                  <Stat label={t("monsters.hp")} value={selected.hp} />
+                  <Stat label={t("monsters.speed")} value={selected.speed} />
+                  <Stat label={t("monsters.size")} value={selected.size} />
+                  <Stat label={t("monsters.environment")} value={selected.environment.join(", ")} />
+                </div>
 
-              <div className="grid grid-cols-6 gap-2 mb-5 text-center">
-                {Object.entries(active.stats).map(([k, v]) => (
-                  <div key={k} className="bg-panel2 border border-line rounded-sm py-2">
-                    <div className="text-xs text-muted uppercase">{k}</div>
-                    <div className="font-display">{v}</div>
+                <div className="grid grid-cols-6 gap-2 mb-5 text-center">
+                  {Object.entries(selected.stats).map(([k, v]) => (
+                    <div key={k} className="bg-panel2 border border-line rounded-sm py-2">
+                      <div className="text-xs text-muted uppercase">{k}</div>
+                      <div className="font-display">{v}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {selected.traits.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="font-display text-sm text-crimsonBright mb-2">
+                      {t("monsters.traits")}
+                    </h4>
+                    <ul className="text-sm space-y-1 text-parchment/90">
+                      {selected.traits.map((tr, i) => (
+                        <li key={i}>{tr}</li>
+                      ))}
+                    </ul>
                   </div>
-                ))}
-              </div>
+                )}
 
-              {active.traits.length > 0 && (
-                <div className="mb-4">
+                <div>
                   <h4 className="font-display text-sm text-crimsonBright mb-2">
-                    {t("monsters.traits")}
+                    {t("monsters.actions")}
                   </h4>
                   <ul className="text-sm space-y-1 text-parchment/90">
-                    {active.traits.map((t2, i) => (
-                      <li key={i}>{t2}</li>
+                    {selected.actions.map((a, i) => (
+                      <li key={i}>{a}</li>
                     ))}
                   </ul>
                 </div>
-              )}
-
-              <div>
-                <h4 className="font-display text-sm text-crimsonBright mb-2">
-                  {t("monsters.actions")}
-                </h4>
-                <ul className="text-sm space-y-1 text-parchment/90">
-                  {active.actions.map((a, i) => (
-                    <li key={i}>{a}</li>
-                  ))}
-                </ul>
-              </div>
-            </Panel>
-          ) : (
-            <Panel title={mode === "browse" ? t("monsters.selectPrompt") : t("monsters.generatePrompt")}>
-              <p className="text-muted text-sm">
-                {mode === "browse" ? t("monsters.selectPromptBody") : t("monsters.generatePromptBody")}
-              </p>
-            </Panel>
-          )}
+              </Panel>
+            ) : (
+              <Panel title={t("monsters.selectPrompt")}>
+                <p className="text-muted text-sm">{t("monsters.selectPromptBody")}</p>
+              </Panel>
+            )}
+          </div>
         </div>
-      </div>
+      ) : generated ? (
+        <GeneratedMonsterForm
+          t={t}
+          monster={generated}
+          onChange={updateGenerated}
+          onChangeStat={updateGeneratedStat}
+        />
+      ) : (
+        <Panel title={t("monsters.generatePrompt")}>
+          <p className="text-muted text-sm">{t("monsters.generatePromptBody")}</p>
+        </Panel>
+      )}
     </div>
+  );
+}
+
+function GeneratedMonsterForm({ t, monster, onChange, onChangeStat }) {
+  return (
+    <Panel eyebrow={t("monsters.editHeading")} title={monster.name}>
+      <p className="text-xs text-muted mb-4">{t("monsters.editHint")}</p>
+
+      <div className="grid sm:grid-cols-2 gap-3 mb-4">
+        <FormField label={t("monsters.name")}>
+          <input
+            className="input"
+            value={monster.name}
+            onChange={(e) => onChange({ name: e.target.value })}
+          />
+        </FormField>
+        <FormField label={t("monsters.type")}>
+          <input
+            className="input"
+            value={monster.type}
+            onChange={(e) => onChange({ type: e.target.value })}
+          />
+        </FormField>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+        <FormField label={t("monsters.cr")}>
+          <input className="input" value={monster.cr} onChange={(e) => onChange({ cr: e.target.value })} />
+        </FormField>
+        <FormField label={t("monsters.size")}>
+          <input className="input" value={monster.size} onChange={(e) => onChange({ size: e.target.value })} />
+        </FormField>
+        <FormField label={t("monsters.ac")}>
+          <input
+            type="number"
+            className="input"
+            value={monster.ac}
+            onChange={(e) => onChange({ ac: Number(e.target.value) || 0 })}
+          />
+        </FormField>
+        <FormField label={t("monsters.hp")}>
+          <input
+            type="number"
+            className="input"
+            value={monster.hp}
+            onChange={(e) => onChange({ hp: Number(e.target.value) || 0 })}
+          />
+        </FormField>
+      </div>
+
+      <FormField label={t("monsters.speed")} className="mb-5">
+        <input className="input" value={monster.speed} onChange={(e) => onChange({ speed: e.target.value })} />
+      </FormField>
+
+      <div className="grid grid-cols-6 gap-2 mb-5 text-center">
+        {Object.entries(monster.stats).map(([k, v]) => (
+          <div key={k}>
+            <div className="text-xs text-muted uppercase mb-1">{k}</div>
+            <input
+              type="number"
+              className="input text-center"
+              value={v}
+              onChange={(e) => onChangeStat(k, Number(e.target.value) || 0)}
+            />
+          </div>
+        ))}
+      </div>
+
+      <FormField label={`${t("monsters.traits")} — ${t("monsters.traitsHint")}`} className="mb-5">
+        <textarea
+          className="input"
+          rows={3}
+          value={monster.traits.join("\n")}
+          onChange={(e) => onChange({ traits: e.target.value.split("\n").filter((l) => l.trim()) })}
+        />
+      </FormField>
+
+      <FormField label={`${t("monsters.actions")} — ${t("monsters.actionsHint")}`}>
+        <textarea
+          className="input"
+          rows={4}
+          value={monster.actions.join("\n")}
+          onChange={(e) => onChange({ actions: e.target.value.split("\n").filter((l) => l.trim()) })}
+        />
+      </FormField>
+
+      <style jsx global>{`
+        .input {
+          width: 100%;
+          background: #1e2126;
+          border: 1px solid #3a3d44;
+          border-radius: 2px;
+          padding: 0.6rem 0.75rem;
+          font-size: 0.875rem;
+          color: #f4ede1;
+        }
+        .input:focus {
+          outline: none;
+          border-color: #c53131;
+        }
+      `}</style>
+    </Panel>
+  );
+}
+
+function FormField({ label, children, className = "" }) {
+  return (
+    <label className={`block ${className}`}>
+      <span className="block text-xs text-muted uppercase tracking-wide mb-1">{label}</span>
+      {children}
+    </label>
   );
 }
 

@@ -11,6 +11,7 @@ export default function NavBar() {
     { href: "/", label: t("nav.home") },
     { href: "/shops", label: t("nav.shops") },
     { href: "/monsters", label: t("nav.monsters") },
+    { href: "/encounter", label: t("nav.encounter") },
     { href: "/character-sheet", label: t("nav.characterSheet") },
     { href: "/homebrew", label: t("nav.homebrew") },
   ];

@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import Panel from "@/components/Panel";
 import { MONSTERS, ENVIRONMENTS } from "@/lib/data/monsters";
 import { CR_TIERS } from "@/lib/data/monsterGenTables";
-import { generateRandomMonster } from "@/lib/data/monsterGenerator";
+import { generateRandomMonster } from "@/lib/monsterGenerator";
 import { addItem } from "@/lib/storage";
 import { useT } from "@/lib/i18n/useT";
 
